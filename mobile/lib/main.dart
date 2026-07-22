@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'core/theme.dart';
-import 'l10n/app_localizations.dart';
 import 'screens/splash_screen.dart';
 
 Future<void> main() async {
@@ -28,13 +25,6 @@ class NeonArenaApp extends StatelessWidget {
       title: 'NeonArena',
       debugShowCheckedModeBanner: false,
       theme: NeonTheme.dark,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [Locale('en'), Locale('bn')],
       home: const SplashScreen(),
     );
   }
