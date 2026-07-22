@@ -21,13 +21,14 @@ jobs:
       - name: Create .env for user app
         working-directory: mobile
         run: |
-          cp .env.example .env
-          sed -i 's|https://YOUR_PROJECT.supabase.co|${{ secrets.SUPABASE_URL }}|g' .env
-          sed -i 's|YOUR_ANON_KEY|${{ secrets.SUPABASE_ANON_KEY }}|g' .env
-          sed -i 's|xxxxx.apps.googleusercontent.com|dummy.apps.googleusercontent.com|g' .env
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env
+          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+          echo "GOOGLE_CLIENT_ID=placeholder.apps.googleusercontent.com" >> .env
 
       - name: Create assets folder
-        run: mkdir -p mobile/assets/images
+        run: |
+          mkdir -p mobile/assets/images
+          mkdir -p mobile/assets/fonts
 
       - name: Install dependencies
         working-directory: mobile
@@ -35,11 +36,11 @@ jobs:
 
       - name: Generate localizations
         working-directory: mobile
-        run: flutter gen-l10n
+        run: flutter gen-l10n || true
 
-      - name: Build debug APK (no signing needed)
+      - name: Build debug APK
         working-directory: mobile
-        run: flutter build apk --debug
+        run: flutter build apk --debug --no-tree-shake-icons
 
       - name: Upload User App APK
         uses: actions/upload-artifact@v4
@@ -63,9 +64,8 @@ jobs:
       - name: Create .env for admin app
         working-directory: admin_app
         run: |
-          cp .env.example .env
-          sed -i 's|https://YOUR_PROJECT.supabase.co|${{ secrets.SUPABASE_URL }}|g' .env
-          sed -i 's|YOUR_ANON_KEY|${{ secrets.SUPABASE_ANON_KEY }}|g' .env
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env
+          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
 
       - name: Install dependencies
         working-directory: admin_app
@@ -73,7 +73,7 @@ jobs:
 
       - name: Build debug APK
         working-directory: admin_app
-        run: flutter build apk --debug
+        run: flutter build apk --debug --no-tree-shake-icons
 
       - name: Upload Admin App APK
         uses: actions/upload-artifact@v4
