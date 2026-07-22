@@ -1,0 +1,83 @@
+name: Build APKs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-user-app:
+    name: Build User App APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0'
+          channel: stable
+          cache: true
+
+      - name: Create .env for user app
+        working-directory: mobile
+        run: |
+          cp .env.example .env
+          sed -i 's|https://YOUR_PROJECT.supabase.co|${{ secrets.SUPABASE_URL }}|g' .env
+          sed -i 's|YOUR_ANON_KEY|${{ secrets.SUPABASE_ANON_KEY }}|g' .env
+          sed -i 's|xxxxx.apps.googleusercontent.com|dummy.apps.googleusercontent.com|g' .env
+
+      - name: Create assets folder
+        run: mkdir -p mobile/assets/images
+
+      - name: Install dependencies
+        working-directory: mobile
+        run: flutter pub get
+
+      - name: Generate localizations
+        working-directory: mobile
+        run: flutter gen-l10n
+
+      - name: Build debug APK (no signing needed)
+        working-directory: mobile
+        run: flutter build apk --debug
+
+      - name: Upload User App APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: NeonArena-User-App-debug
+          path: mobile/build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7
+
+  build-admin-app:
+    name: Build Admin App APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0'
+          channel: stable
+          cache: true
+
+      - name: Create .env for admin app
+        working-directory: admin_app
+        run: |
+          cp .env.example .env
+          sed -i 's|https://YOUR_PROJECT.supabase.co|${{ secrets.SUPABASE_URL }}|g' .env
+          sed -i 's|YOUR_ANON_KEY|${{ secrets.SUPABASE_ANON_KEY }}|g' .env
+
+      - name: Install dependencies
+        working-directory: admin_app
+        run: flutter pub get
+
+      - name: Build debug APK
+        working-directory: admin_app
+        run: flutter build apk --debug
+
+      - name: Upload Admin App APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: NeonArena-Admin-App-debug
+          path: admin_app/build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7
