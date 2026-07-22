@@ -25,7 +25,7 @@ jobs:
           echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
           echo "GOOGLE_CLIENT_ID=placeholder.apps.googleusercontent.com" >> .env
 
-      - name: Create assets folder
+      - name: Create assets folders
         run: |
           mkdir -p mobile/assets/images
           mkdir -p mobile/assets/fonts

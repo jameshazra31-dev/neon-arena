@@ -32,14 +32,11 @@ android {
             minifyEnabled false
             shrinkResources false
         }
-        debug {
-            applicationIdSuffix ".debug"
-        }
     }
 }
 
 flutter {
-    source "../../../"
+    source "../../"
 }
 
 dependencies {
